@@ -14,9 +14,8 @@ router.get('/books',isAuth, adminController.getBooks);
 router.post('/add-book'
 			,[
 	body('title').isLength({min:3}).trim(),
-	body('imgUrl').isURL(),
 	body('price').isFloat(),
-	body('description').isLength({min:10,max:100}).trim()
+	body('description').isLength({min:5,max:100}).trim()
 ]
 			,isAuth,adminController.postAddBook);
 
@@ -24,13 +23,12 @@ router.get('/edit-book/:bookId',isAuth,adminController.getEditBook);
 
 router.post('/edit-book',[
 	body('title').isLength({min:3}).trim(),
-	body('imgUrl').isURL(),
 	body('price').isFloat(),
 	body('description').isLength({min:10,max:100}).trim()
 ]
 			,
 			isAuth,adminController.postEditBook);
 
-router.post('/delete-book',isAuth,adminController.postDeleteBook);
+router.delete('/book/:bookId',isAuth,adminController.deleteBook);
 
 module.exports = router ;

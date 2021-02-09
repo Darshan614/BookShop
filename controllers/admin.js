@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const fileHelper = require('../util/file'); 
 const { validationResult } = require('express-validator/check');
 const Book = require('../models/book');
 
@@ -31,11 +33,30 @@ exports.getBooks = (req,res,next)=>{
 }
 
 exports.postAddBook = (req,res,next)=>{
+	console.log('inside postAddBook');
     const title = req.body.title;
-    const imgUrl = req.body.imgUrl;
+    const image = req.file;
     const price = req.body.price;
     const category = req.body.category;
     const description = req.body.description;
+	console.log(image);
+	if(!image){
+		return res.status(422).render('admin/add-book',{
+            pageTitle:'Add Book',
+            path: 'admin/add-book',
+            editing: false,
+			hasError:true,
+            book:{
+				title:title,
+				price:price,
+				description:description,
+				category:category
+			},
+			errorMessage: 'Attached file is not image',
+			validationErrors: []
+        });
+	}
+	
 	const errors = validationResult(req);
 	if(!errors.isEmpty()){
 		return res.status(422).render('admin/edit-book',{
@@ -45,7 +66,6 @@ exports.postAddBook = (req,res,next)=>{
 			hasError:true,
             book:{
 				title:title,
-				imgUrl:imgUrl,
 				price:price,
 				description:description,
 				category:category
@@ -54,6 +74,7 @@ exports.postAddBook = (req,res,next)=>{
 			validationErrors: errors.array() 
         });
 }
+	const imgUrl = image.path;
     const book = new Book({
         title:title,
         imgUrl:imgUrl,
@@ -106,7 +127,7 @@ exports.postEditBook = (req,res,next)=>{
     const bookId = req.body.bookId;
     const updatedTitle = req.body.title;
     const updatedPrice = req.body.price;
-    const updatedImgUrl = req.body.imgUrl;
+    const image = req.file;
     const updatedDesc = req.body.description;
     const updatedCategory = req.body.category;
 	const errors = validationResult(req);
@@ -118,7 +139,6 @@ exports.postEditBook = (req,res,next)=>{
 			hasError:true,
             book:{
 				title:updatedTitle,
-				imgUrl:updatedImgUrl,
 				price:updatedPrice,
 				description:updatedDesc,
 				category:updatedCategory,
@@ -137,7 +157,10 @@ exports.postEditBook = (req,res,next)=>{
         book.title = updatedTitle;
         book.price = updatedPrice;
         book.category = updatedCategory;
-        book.imgUrl = updatedImgUrl;
+		if(image){
+			fileHelper.deleteFile(book.imgUrl);
+			book.imgUrl=image.path;
+		}
         book.description = updatedDesc;
         return book.save().then(result=>{
         console.log('Updated Product');
@@ -152,16 +175,22 @@ exports.postEditBook = (req,res,next)=>{
     });
 }
 
-exports.postDeleteBook = (req,res,next)=>{
-    const bookId = req.body.bookId;
-    Book.deleteOne({_id:bookId,userId:req.user._id})
-    .then(() => {
+exports.deleteBook = (req,res,next)=>{
+    const bokId = req.params.bookId;
+	console.log(bokId);
+	Book.findById(bokId).then(book=>{
+		if(!book){
+			return next(new Error('Book not found.'));
+		}
+		fileHelper.deleteFile(book.imgUrl);
+		return Book.deleteOne({_id:bokId,userId:req.user._id});
+	}).then(() => {
         console.log('DESTROYED Book');
-        res.redirect('/admin/books');
+        res.status(200).json({message:'Success!'});
       })
     .catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      res.status(500).json({message:'Deletion failed'});
     });
-}
+	}
+    
+    

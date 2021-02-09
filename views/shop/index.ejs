@@ -14,7 +14,7 @@
                             <h1 class="product__title"><%= book.title %></h1>
                         </header>
                         <div class="card__image">
-                            <img src="<%= book.imgUrl %>"
+                            <img src="/<%= book.imgUrl %>"
                                 alt="<%= book.title %>" height=180 width=500>
                         </div>
                         <div class="card__content">
@@ -30,8 +30,27 @@
                     </article>
                 <% } %>
             </div>
+		
         <% } else { %>
             <h1>No Books Found!</h1>
         <% } %>
+		<section class="pagination">
+			
+			<a href="/?page=Fiction" <%if(page==='Fiction'){%>
+			   class="onit"
+			   <%}%> >Fiction</a>
+			<a href="/?page=Thriller" <%if(page==='Thriller'){%>
+			   class="onit"
+			   <%}%> >Thriller</a>
+			<a href="/?page=Mystery" <%if(page==='Mystery'){%>
+			   class="onit"
+			   <%}%> >Mystery</a>
+			<a href="/?page=Western" <%if(page==='Western'){%>
+			   class="onit"
+			   <%}%> >Western</a>
+			<a href="/?page=Romance" <%if(page==='Romance'){%>
+			   class="onit"
+			   <%}%> >Romance</a>
+		</section>
     </main>
 <%- include('../includes/end.ejs') %>

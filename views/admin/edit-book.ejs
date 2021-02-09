@@ -11,24 +11,42 @@
 			  <%= errorMessage %>
 		</div>
 		<% } %>
-        <form class="product-form" action="/admin/<% if (editing) { %>edit-book<% } else { %>add-book<% } %>" method="POST">
+        <form class="product-form" action="/admin/<% if (editing) { %>edit-book<% } else { %>add-book<% } %>" method="POST" enctype="multipart/form-data">
             <div class="form-control">
                 <label for="title">Title</label>
                 <input  
 					   class="<%= validationErrors.find(e=>e.param==='title') ? 'invalid':''%>"
 					   type="text" name="title" id="title" value="<% if (editing || hasError) { %><%= book.title %><% } %>">
             </div>
-            <div class="form-control">
+            <!-- <div class="form-control">
                 <label for="imageUrl">Image URL</label>
                 <input 
 					   class="<%= validationErrors.find(e=>e.param==='imgUrl') ? 'invalid':''%>"
 					   type="text" name="imgUrl" id="imageUrl" value="<% if (editing || hasError) { %><%= book.imgUrl %><% } %>">
+            </div> -->
+			<div class="form-control">
+                <label for="image">Image</label>
+                <input 
+					   type="file" 
+					   name="image" 
+					   id="image" >
             </div>
             <div class="form-control">
                 <label for="category">Category</label>
-                <input 
+                <!-- <input 
 					   class="<%= validationErrors.find(e=>e.param==='category') ? 'invalid':''%>"
-					   type="text" name="category" id="category" value="<% if (editing || hasError) { %><%= book.category %><% } %>">
+					   type="text" name="category" id="category" value="<% if (editing || hasError) { %><%= book.category %><% } %>"> -->
+				<select class="<%= validationErrors.find(e=>e.param==='category') ? 'invalid':''%>"
+						id="category" 
+						name="category"
+						value="<% if (editing || hasError) { %><%= book.category %><% } %>">
+					<option value="Fiction">Fiction</option>
+					<option value="Sci-Fi">Sci-Fi</option>
+					<option value="Mystery">Mystery</option>
+					<option value="Thriller">Thriller</option>
+					<option value="Romance">Romance</option>
+					<option value="Western">Western</option>
+				</select>
             </div>
             <div class="form-control">
                 <label for="price">Price</label>
